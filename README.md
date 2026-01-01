@@ -1,8 +1,8 @@
-# Wagtail Starter Kit (base)
+# Wagtail Shop Kit
 
-This is a starter kit for a Wagtail project. It includes a Docker setup for local development, a basic project structure, and some useful tools and libraries.
+This is a starter kit for a Wagtail e-commerce project. It includes a Docker setup for local development, a basic project structure, and some useful tools and libraries.
 
-You can use this project as a starting point for your own Wagtail projects and build upon it as needed.
+You can use this project as a starting point for your own Wagtail shop projects and build upon it as needed.
 
 ## Features
 
@@ -14,7 +14,7 @@ You can use this project as a starting point for your own Wagtail projects and b
 - Wagtail CMS v7.2
 - Django v5.2
 
-![Wagtail Starter Kit](./docs/welcome-screen.jpg)
+![Wagtail Shop Kit](./docs/welcome-screen.jpg)
 
 ## Requirements
 
@@ -34,7 +34,7 @@ Optional:
 
 ## Getting started
 
-1. Clone this repository [https://github.com/wagtail-examples/wagtail-starter-kit.git](https://github.com/wagtail-examples/wagtail-starter-kit.git) to a location on your computer
+1. Clone this repository to a location on your computer
 2. Change into the project directory
 3. Copy `.env.example` to `.env` and choose your database (default is SQLite). Set `DATABASE=sqlite|postgres|mysql`.
 4. Run `make build` to build the Docker containers
@@ -81,10 +81,10 @@ For detailed documentation on all available commands, see [Management Commands D
 
 ```bash
 # Create sample images and documents for testing
-docker exec -it wagtail-starter-kit-app-1 python manage.py create_sample_media
+docker exec -it wagtail-shop-kit-app-1 python manage.py create_sample_media
 
 # Reset all sample content
-docker exec -it wagtail-starter-kit-app-1 python manage.py create_sample_media --reset
+docker exec -it wagtail-shop-kit-app-1 python manage.py create_sample_media --reset
 ```
 
 ## View the site
@@ -102,16 +102,9 @@ Currently there is no deployment setup included in this project. You could try t
 1.  How to deploy a Wagtail site to [PythonAnywhere](https://www.nickmoreton.co.uk/articles/deploy-wagtail-cms-to-pythonanywhere/), this does need you to have a paid account with PythonAnywhere.
 2. This [example](https://github.com/wagtail-examples/wsk-deploy-python-anywhere) is a fork of this starter kit which has documentation on how to deploy to PythonAnywhere, using a free account.
 
-## Bonus branches
-
-There are 2 branches that you can use to explore more features of the project:
-
-- [Wagtail 'Getting Started Tutorial' PR](https://github.com/nm-examples/wagtail-starter-kit/pull/22) Is a run through of the official Wagtail Getting Started tutorial where a simple blog is created.
-- [Wagtail 'Extended Tutorial'](https://github.com/nm-examples/wagtail-starter-kit/pull/11) Is a run through of the official Wagtail Extended Tutorial where the Getting Started Tutorial is extended to include more features.
-
 ## Contributing
 
-If you have any suggestions or improvements, please open an [issue](https://github.com/wagtail-examples/wagtail-starter-kit/issues) or a [pull request](https://github.com/wagtail-examples/wagtail-starter-kit/pulls).
+If you have any suggestions or improvements, please open an issue or a pull request.
 
 ## License
 

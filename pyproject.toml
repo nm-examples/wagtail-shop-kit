@@ -1,7 +1,7 @@
 [project]
-name = "wagtail-starter-kit"
+name = "wagtail-shop-kit"
 version = "0.1.0"
-description = "Full Stack Wagtail Starter Kit"
+description = "Full Stack Wagtail Shop Kit"
 authors = [{name = "nickmoreton", email = "nickmoreton@me.com"}]
 license = "MIT"
 readme = "README.md"

@@ -105,17 +105,17 @@ Each ZIP file includes:
 
 #### Creating a small test set
 ```bash
-docker exec -it wagtail-starter-kit-app-1 python manage.py create_sample_media --images 5 --documents 3 --no-zip
+docker exec -it wagtail-shop-kit-app-1 python manage.py create_sample_media --images 5 --documents 3 --no-zip
 ```
 
 #### Setting up a demo environment
 ```bash
-docker exec -it wagtail-starter-kit-app-1 python manage.py create_sample_media --clear --images 25 --documents 15
+docker exec -it wagtail-shop-kit-app-1 python manage.py create_sample_media --clear --images 25 --documents 15
 ```
 
 #### Cleaning up all test content
 ```bash
-docker exec -it wagtail-starter-kit-app-1 python manage.py create_sample_media --reset
+docker exec -it wagtail-shop-kit-app-1 python manage.py create_sample_media --reset
 ```
 
 ### Technical Implementation

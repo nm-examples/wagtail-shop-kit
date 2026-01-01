@@ -1,7 +1,7 @@
 {
-  "name": "wagtail-starter-kit",
+  "name": "wagtail-shop-kit",
   "version": "1.0.0",
-  "description": "A starter kit for Wagatil CMS",
+  "description": "A starter kit for Wagtail CMS e-commerce projects",
   "main": "index.js",
   "scripts": {
     "styles": "sass static_src/scss:static_compiled/css",
@@ -17,17 +17,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wagtail-examples/wagtail-starter-kit.git"
+    "url": ""
   },
   "keywords": [
-    "wagtail"
+    "wagtail",
+    "shop",
+    "e-commerce"
   ],
-  "author": "Nick Moreton <nickmoreton@me.com>",
+  "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wagtail-examples/wagtail-starter-kit/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/wagtail-examples/wagtail-starter-kit#readme",
+  "homepage": "",
   "devDependencies": {
     "@picocss/pico": "^2.1.1",
     "concurrently": "^9.2.1",

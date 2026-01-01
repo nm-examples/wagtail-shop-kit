@@ -4,7 +4,7 @@
 include .env
 
 # Default Docker image name for direct builds
-IMAGE_NAME ?= wagtail-starter-kit
+IMAGE_NAME ?= wagtail-shop-kit
 
 # Determine which compose override to use based on DATABASE env var
 # Allowed values: sqlite (default), postgres, mysql
