@@ -4,5 +4,7 @@ This is the docs folder. It contains all the documentation for the project.
 
 ## Table of contents
 
-- [Backend Documentation](./backend-development.md)
-- [Frontend Documentation](./frontend-development.md)
+- [Installation Guide](./installation.md)
+- [Backend Development](./backend-development.md)
+- [Frontend Development](./frontend-development.md)
+- [Management Commands](./management-commands.md)

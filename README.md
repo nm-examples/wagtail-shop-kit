@@ -1,110 +1,48 @@
 # Wagtail Shop Kit
 
-This is a starter kit for a Wagtail e-commerce project. It includes a Docker setup for local development, a basic project structure, and some useful tools and libraries.
-
-You can use this project as a starting point for your own Wagtail shop projects and build upon it as needed.
+An e-commerce starter kit built with Wagtail CMS and Django. This project provides a foundation for building online shops with a powerful content management system.
 
 ## Features
 
-- Docker Development Environment
-- Postgresql, Mysql or Sqlite3 Database
-- Frontend Node SASS and Javascript compilation
-- Pico CSS for almost classless styling
-- esbuild javascript bundler
-- Wagtail CMS v7.2
-- Django v5.2
+- **Wagtail CMS v7.2** - Powerful, flexible content management
+- **Django v5.2** - Robust Python web framework
+- **Docker Development Environment** - Containerized setup for consistency
+- **Multiple Database Options** - PostgreSQL, MySQL, or SQLite3
+- **Modern Frontend Stack** - SASS, esbuild, and Pico CSS
+- **E-commerce Ready** - Built with shop functionality in mind
 
 ![Wagtail Shop Kit](./docs/welcome-screen.jpg)
 
-## Requirements
-
-Required:
-
-- [Python >= 3.10](https://www.python.org/downloads/) (developemnt and deployment)
-- [Docker](https://www.docker.com/) (for local development)
-- [Docker Compose](https://docs.docker.com/compose/) (for local development)
-- [Node.js](https://nodejs.org/en/) (for frontend build tools) (for frontend build tools in development)
-
-Optional:
-- [Git](https://git-scm.com/) (optional, for version control)
-- [Make](https://www.gnu.org/software/make/) (optional, for running commands)
-- [NVM](https://github.com/nvm-sh/nvm) (optional, for managing Node versions)
-- [pre-commit](https://pre-commit.com/) (optional, for running code checks)
-- [UV](https://github.com/astral-sh/uv) (optional, for managing Python dependencies)
-
-## Getting started
-
-1. Clone this repository to a location on your computer
-2. Change into the project directory
-3. Copy `.env.example` to `.env` and choose your database (default is SQLite). Set `DATABASE=sqlite|postgres|mysql`.
-4. Run `make build` to build the Docker containers
-5. Run `make up` to start the Docker containers
-6. Run `make migrate` to apply database migrations
-7. Run `make superuser` to create a superuser
-8. Run `make run` to start the Django development server
-
-Note: `.env` is required. `make build` and `make up` validate environment variables via `make check-env` and will fail if required values are missing. See `.env.example` for all keys.
-
-### Quick start
-
-There is a make command to run most of the steps above in one go:
+## Quick Start
 
 ```bash
+# Copy environment file and configure
+cp .env.example .env
+
+# Build and start the project
 make quickstart
+
+# Create admin user
+make superuser
 ```
 
-You'll need to run `make superuser` separately.
+The site will be available at [http://localhost:8000](http://localhost:8000)
 
-If you haven't changed `.env` the app will default to:
+## Documentation
 
-- Use SQLite as the database
-- A mail utility will be available at [http://localhost:8025](http://localhost:8025)
-- A database management utility will be available at [http://localhost:8080](http://localhost:8080)
+- **[Installation Guide](./docs/installation.md)** - Detailed setup instructions
+- **[Backend Development](./docs/backend-development.md)** - Database configuration and backend development
+- **[Frontend Development](./docs/frontend-development.md)** - CSS/JS build process and styling
+- **[Management Commands](./docs/management-commands.md)** - Helpful commands for development
 
-## Working with the fronend
+## Technology Stack
 
-The project uses [Pico CSS](https://picocss.com/) for styling. It's a minmal setup that you can build on.
-
-When you first run the project you may notice that no styling is applied. This is because the first time you run the project with `make up` the compiled frontend files might not be available. Just run the frontend build script and refresh the page. [Read on](./docs/frontend-development.md)
-
-## Working with the backend
-
-The project uses Docker for local development. The Wagtail project is in the `app` directory. The project is set up to use a SQLite database by default. You can change this to use Mysql or Postgres. [Read on](./docs/backend-development.md)
-
-## Management Commands
-
-The project includes custom Django management commands to help with development and testing. These commands can be used to generate sample content, manage data, and perform administrative tasks.
-
-For detailed documentation on all available commands, see [Management Commands Documentation](./docs/management-commands.md).
-
-### Quick Examples
-
-```bash
-# Create sample images and documents for testing
-docker exec -it wagtail-shop-kit-app-1 python manage.py create_sample_media
-
-# Reset all sample content
-docker exec -it wagtail-shop-kit-app-1 python manage.py create_sample_media --reset
-```
-
-## View the site
-
-The site will be available at [http://localhost:8000](http://localhost:8000).
-
-The Wagtail admin interface will be available at [http://localhost:8000/admin](http://localhost:8000/admin).
-
-## Deployment
-
-Currently there is no deployment setup included in this project. You could try this [Wagtail deployment guide](https://docs.wagtail.org/en/stable/deployment/index.html) for some ideas.
-
-## Deployment Examples
-
-1.  How to deploy a Wagtail site to [PythonAnywhere](https://www.nickmoreton.co.uk/articles/deploy-wagtail-cms-to-pythonanywhere/), this does need you to have a paid account with PythonAnywhere.
-2. This [example](https://github.com/wagtail-examples/wsk-deploy-python-anywhere) is a fork of this starter kit which has documentation on how to deploy to PythonAnywhere, using a free account.
-
-## Contributing
-
-If you have any suggestions or improvements, please open an issue or a pull request.
+- Python 3.10+
+- Django 5.2
+- Wagtail 7.2
+- Docker & Docker Compose
+- Node.js (SASS & esbuild)
+- Pico CSS
 
 ## License
 
