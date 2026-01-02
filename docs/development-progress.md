@@ -33,11 +33,17 @@
   - Parent types: HomePage, self (subcategories)
   - Subpage types: ProductPage, CategoryPage
   - Methods: get_products(), get_context()
-- [ ] Create category page template (`app/shop/templates/shop/category_page.html`)
+- [x] Create category page template (`app/shop/templates/shop/category_page.html`)
   - Category header, description, icon
-  - Child categories (if any)
+  <!-- - Child categories (if any) did not proceed -->
   - Product grid showing child products
-  - Pagination
+  <!-- - Paginationdid not proceed -->
+- [ ] Create a ShopIndexPage (extends wagtail.models.Page)
+  - Parent types: HomePage ONLY
+  - Subpage types: CategoryPage ONLY
+  - Template: `app/shop/templates/shop/shop_index_page.html`
+  - Displays all CategoryPages as cards with icon, name, description
+- [ ] Add styling in extra_css block
 - [ ] Run migrations
 - [ ] Create sample categories command
   - Command: `python manage.py create_sample_categories`

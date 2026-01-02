@@ -4,7 +4,7 @@ from wagtail.fields import RichTextField
 from wagtail.models import Page
 
 """
-**Create CategoryPage model**
+**Create ShopCategoryPage model**
    - File: `app/shop/models.py`
    - Extends: `wagtail.models.Page`
    - Fields:
