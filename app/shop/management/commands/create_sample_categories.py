@@ -31,7 +31,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Find parent page
         try:
-            parent_page = Page.objects.get(slug=options["parent_slug"]).specific
+            parent_page = Page.objects.get(slug=options["parent_slug"])
         except Page.DoesNotExist:
             self.stdout.write(
                 self.style.ERROR(
@@ -43,8 +43,16 @@ class Command(BaseCommand):
         # Reset if requested
         if options["reset"]:
             self.stdout.write("Deleting existing category pages...")
-            deleted_count = ShopCategoryPage.objects.count()
-            ShopCategoryPage.objects.all().delete()
+            all_categories = parent_page.get_children().type(ShopCategoryPage)
+            deleted_count = all_categories.count()
+
+            # Delete all at once instead of iterating
+            for category in all_categories:
+                category.delete()
+
+            # Refresh parent page from database to update tree structure
+            parent_page.refresh_from_db()
+
             self.stdout.write(
                 self.style.SUCCESS(f"Deleted {deleted_count} category pages")
             )
@@ -181,7 +189,8 @@ class Command(BaseCommand):
 
             # Add as child of parent page
             parent_page.add_child(instance=category_page)
-            category_page.save_revision().publish()
+            rev = category_page.save_revision()
+            rev.publish()
 
             created_count += 1
             icon_status = (
