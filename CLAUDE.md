@@ -156,3 +156,20 @@ Runs pre-commit checks and test suite on push to main and pull requests.
 make sh
 python manage.py test app.home.tests.HomePageTests.test_homepage_view
 ```
+
+## Documentation Resources
+
+**Official Wagtail Documentation**: https://docs.wagtail.org/en/stable/
+
+Key sections for this project:
+- **Getting Started**: https://docs.wagtail.org/en/stable/getting_started/index.html
+- **Page Models**: https://docs.wagtail.org/en/stable/topics/pages.html
+- **Snippets**: https://docs.wagtail.org/en/stable/topics/snippets.html
+- **Images**: https://docs.wagtail.org/en/stable/topics/images.html
+- **StreamField**: https://docs.wagtail.org/en/stable/topics/streamfield.html
+- **Search**: https://docs.wagtail.org/en/stable/topics/search/index.html
+- **Testing**: https://docs.wagtail.org/en/stable/advanced_topics/testing.html
+
+**Django Documentation**: https://docs.djangoproject.com/en/5.2/
+
+**Pico CSS Documentation**: https://picocss.com/docs
