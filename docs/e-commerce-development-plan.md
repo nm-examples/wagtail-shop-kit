@@ -76,9 +76,20 @@ python manage.py setup_shop_demo --all-phases
 
 ---
 
-## Phase 1: Foundation Setup
+## Phase 1: Category Pages
 
-**Goal**: Create the shop app structure and category foundation
+**Goal**: Create category pages as the foundation of the page tree hierarchy
+
+### Architecture Decision
+
+Categories are implemented as **Wagtail Pages** (not snippets) to leverage Wagtail's page tree for hierarchical navigation. Products will be children of category pages, creating a natural URL structure like `/electronics/wireless-headphones/`.
+
+**Trade-offs:**
+- ✅ Natural URL hierarchy and breadcrumbs
+- ✅ Built-in Wagtail admin page management
+- ✅ Easy to add category-specific content and templates
+- ⚠️ Products can only belong to one category (parent page relationship)
+- ⚠️ Moving products between categories requires page tree operations
 
 ### Tasks
 
@@ -90,46 +101,63 @@ python manage.py setup_shop_demo --all-phases
    - Create `app/shop/templates/shop/` directory structure
    - Create initial `__init__.py`, `models.py`, `admin.py`, `tests.py`
 
-2. **Create ProductCategory snippet**
+2. **Create CategoryPage model**
    - File: `app/shop/models.py`
+   - Extends: `wagtail.models.Page`
    - Fields:
-     - `name` (CharField, max 200)
-     - `slug` (SlugField, unique, auto-populate from name)
-     - `description` (RichTextField)
+     - `description` (RichTextField, blank=True)
      - `icon` (ForeignKey to wagtailimages.Image, optional)
-     - `display_order` (IntegerField for sorting)
-     - `is_active` (BooleanField, default True)
-   - Register as Wagtail snippet with `@register_snippet`
-   - Add `__str__` and Meta ordering
-   - Add panels for Wagtail admin
+     - `featured` (BooleanField, default=False)
+   - Content panels:
+     - Basic: title (inherited from Page), description, icon, featured
+   - Settings panels:
+     - Promote tab: slug (auto-populating), SEO fields
+   - Parent page types: `HomePage` or self (for subcategories)
+   - Subpage types: `ProductPage`, `CategoryPage` (allow subcategories)
+   - Methods:
+     - `get_products()`: Returns child ProductPage objects
+     - `get_context()`: Add products and pagination to template
 
-3. **Run migrations**
+3. **Create category page template**
+   - File: `app/shop/templates/shop/category_page.html`
+   - Extends: `base.html`
+   - Sections:
+     - Category header (title, description, icon)
+     - Child categories (if any)
+     - Product grid showing child products
+     - Pagination
+   - Responsive design using Pico CSS
+
+4. **Run migrations**
    ```bash
    python manage.py makemigrations shop
    python manage.py migrate
    ```
 
-4. **Create sample categories command/fixture**
+5. **Create sample categories command**
    - **Management command**: `create_sample_categories.py`
-     - Pre-populate: Electronics, Fashion, Home & Living, Beauty, Sports, Books
-     - Include sample icons and descriptions
-     - Options: `--reset`, `--with-icons`
-   - **Alternative fixture**: `shop/fixtures/categories.json`
-     - Load with: `python manage.py loaddata categories`
-   - **Purpose**: Reproducible category data for testing and demos
+   - Creates 6 category pages as children of HomePage:
+     - Electronics, Fashion, Home & Living, Beauty, Sports, Books
+   - Options:
+     - `--reset`: Delete existing category pages
+     - `--with-icons`: Create icon images
+     - `--parent-slug=home`: Specify parent page (default: HomePage)
+   - **Purpose**: Reproducible category page structure for demos
 
-5. **Write tests**
+6. **Write tests**
    - File: `app/shop/tests.py`
-   - Test category creation, slug generation, ordering
-   - Test admin access
+   - Test CategoryPage creation and page tree hierarchy
+   - Test get_products() method
+   - Test category page rendering
+   - Test admin page operations (create, edit, move)
 
-**Deliverable**: ProductCategory snippet functional in Wagtail admin, ready to tag products
+**Deliverable**: CategoryPage model working in Wagtail page tree, ready to contain products
 
 ---
 
 ## Phase 2: Product Detail Pages
 
-**Goal**: Create individual product pages with full details
+**Goal**: Create individual product pages as children of categories
 
 ### Tasks
 
@@ -137,21 +165,23 @@ python manage.py setup_shop_demo --all-phases
    - File: `app/shop/models.py`
    - Extends: `wagtail.models.Page`
    - Fields:
-     - `category` (ForeignKey to ProductCategory, on_delete=SET_NULL)
      - `price` (DecimalField, max_digits=10, decimal_places=2)
-     - `sku` (CharField, unique, optional)
+     - `sku` (CharField, unique, optional, help_text for auto-generation)
      - `description` (RichTextField)
      - `main_image` (ForeignKey to wagtailimages.Image)
      - `in_stock` (BooleanField, default=True)
      - `featured` (BooleanField, default=False)
-     - `created_at` (DateTimeField, auto_now_add)
+     - `created_at` (DateTimeField, auto_now_add=True)
    - Content panels:
-     - Basic info: title, category, sku, price
-     - Content: description (rich text)
-     - Media: main_image
+     - Basic info: title, sku, price
+     - Content: description (rich text), main_image
      - Settings: in_stock, featured
-   - Parent page types: HomePage, ProductIndexPage (to be created)
+   - Parent page types: `CategoryPage` (products must be under a category)
+   - Subpage types: None (leaf node)
    - Search fields: title, description, sku
+   - Methods:
+     - `get_category()`: Returns parent CategoryPage
+     - `save()`: Auto-generate SKU if not provided
 
 2. **Create product detail template**
    - File: `app/shop/templates/shop/product_page.html`
@@ -185,99 +215,128 @@ python manage.py setup_shop_demo --all-phases
    - **Management command**: `create_sample_products.py`
    - **Required for UI testing**: Generate realistic browsable products
    - Options:
-     - `--count=20`: Number of products (default: 20, max: 100)
+     - `--count=20`: Number of products per category (default: 20)
      - `--with-images`: Generate sample product images
-     - `--categories=all`: Distribute across all categories
-     - `--reset`: Clear existing products first
-     - `--featured=5`: Mark N products as featured
+     - `--reset`: Clear existing product pages first
+     - `--featured=5`: Mark N products per category as featured
    - Generate realistic product data using Faker:
      - Product names (e.g., "Wireless Bluetooth Speaker", "Cotton T-Shirt")
      - Rich text descriptions (2-3 paragraphs)
      - Prices: $10-$500 range with .99 endings
-     - SKUs: Format like "ELEC-001", "FASH-042"
+     - SKUs: Auto-generated (e.g., "ELEC-001", "FASH-042")
      - Random in_stock status (80% in stock)
-   - Assign to categories (distribute evenly)
-   - Create under HomePage or ProductIndexPage as children
+   - Create products as children of CategoryPage instances
+   - Distribute evenly across all existing categories
    - Generate 2-4 images per product using `create_sample_media` pattern
    - **Purpose**: Reproducible product catalog for testing all product features
 
 6. **Write tests**
    - Test ProductPage creation with all fields
    - Test image gallery inline
-   - Test category relationship
+   - Test get_category() method returns parent
+   - Test parent page type restriction (must be CategoryPage)
    - Test template rendering (200 status)
    - Test search indexing
+   - Test SKU auto-generation
 
-**Deliverable**: Individual product pages with images, descriptions, and category tags, browsable via Wagtail tree
+**Deliverable**: Individual product pages with images, descriptions, browsable via Wagtail page tree under categories
 
 ---
 
-## Phase 3: Category Browse Pages
+## Phase 3: Product Listing/Shop Index Page
 
-**Goal**: Create pages to browse products by category
+**Goal**: Create a main shop page showing all products with filtering
+
+### Architecture Note
+
+Since products are organized under CategoryPages in the tree, we need a separate page type that can list and filter products from across all categories. This provides a "browse all products" view independent of the category hierarchy.
 
 ### Tasks
 
-1. **Create CategoryPage model**
+1. **Create ProductIndexPage model**
    - File: `app/shop/models.py`
    - Extends: `wagtail.models.Page`
    - Fields:
-     - `category` (ForeignKey to ProductCategory)
-     - `show_featured_only` (BooleanField, default=False)
+     - `intro` (RichTextField, blank=True)
      - `products_per_page` (IntegerField, default=12)
-   - Methods:
-     - `get_products()`: Returns queryset of ProductPages filtered by category
-     - `get_context()`: Override to add products to template context with pagination
-   - Parent page types: HomePage
+     - `show_filters` (BooleanField, default=True)
+   - Content panels:
+     - Basic: title, intro, products_per_page, show_filters
+   - Parent page types: `HomePage`
    - Subpage types: None (leaf node)
+   - Max count: 1 (only one shop index)
+   - Methods:
+     - `get_products()`: Returns all ProductPage objects (live, ordered)
+     - `get_categories()`: Returns all CategoryPage objects for filter sidebar
+     - `get_context()`: Add products, categories, filters, pagination to template
 
-2. **Create category page template**
-   - File: `app/shop/templates/shop/category_page.html`
+2. **Add filtering functionality to ProductIndexPage**
+   - Handle GET parameters in `get_context()`:
+     - `category`: Filter by CategoryPage slug
+     - `min_price`, `max_price`: Price range
+     - `in_stock`: Show only available
+     - `featured`: Show featured products
+     - `sort`: Order by (price_asc, price_desc, newest, name)
+   - Add pagination support (Django Paginator)
+
+3. **Create product index template**
+   - File: `app/shop/templates/shop/product_index_page.html`
    - Extends: `base.html`
    - Sections:
-     - Category header (name, description, icon)
-     - Product count
-     - Product grid (reuse home page product card styling)
+     - Page intro/description
+     - Filter sidebar/panel:
+       - Category filter (links to CategoryPages)
+       - Price range sliders
+       - In stock toggle
+       - Featured toggle
+       - Sort dropdown
+     - Product grid (same styling as category page)
+     - Result count ("Showing X of Y products")
      - Pagination controls
-   - Responsive grid: 1 col (mobile), 2 cols (tablet), 3-4 cols (desktop)
-   - Empty state message if no products
+   - Responsive: Filters collapse to dropdown on mobile
 
-3. **Update navigation**
-   - Add category links to header navigation
+4. **Integrate with search**
+   - Update `app/search/views.py`:
+     - Filter results to show ProductPages
+     - Add product-specific result template
+   - Add search box to header navigation
+   - Link from ProductIndexPage
+
+5. **Update navigation**
    - Update `app/home/templates/home/welcome_page.html`:
-     - Link category cards to actual CategoryPage URLs
-   - Consider: Automatic category menu generation in base template
+     - Link "Shop Now" CTA to ProductIndexPage
+     - Link category cards to CategoryPage URLs
+   - Add "Shop" link to header navigation pointing to ProductIndexPage
 
-4. **Run migrations**
+6. **Run migrations**
    ```bash
    python manage.py makemigrations shop
    python manage.py migrate
    ```
 
-5. **Create category pages command**
-   - **Management command**: `create_category_pages.py`
-   - **Required for UI testing**: Creates browsable category pages
-   - Auto-create CategoryPage for each ProductCategory snippet
-   - Parent: HomePage
-   - Slug matches category slug
-   - Options:
-     - `--reset`: Delete existing category pages first
-     - `--featured-only`: Create pages for featured categories only
-   - Link category pages to ProductCategory snippets
-   - **Purpose**: Reproducible category page structure for navigation testing
+7. **Create product index page** (via admin or command)
+   - **Optional management command**: `setup_product_index.py`
+   - Create ProductIndexPage under HomePage programmatically
+   - Slug: `/shop/` or `/products/`
+   - Set intro text, products_per_page, show_filters
+   - **Alternative**: Document manual creation via Wagtail admin
+   - **Purpose**: Quick setup of main shop entry point
 
-6. **Write tests**
-   - Test CategoryPage creation
-   - Test product filtering by category
+8. **Write tests**
+   - Test ProductIndexPage creation
+   - Test get_products() returns all products
+   - Test get_categories() returns all categories
+   - Test filtering by category, price, stock
+   - Test sorting options
    - Test pagination
-   - Test empty category display
+   - Test search integration
    - Test template rendering
 
-**Deliverable**: Category pages showing filtered products, linked from home page
+**Deliverable**: Main shop page with all products, filtering, sorting, and search
 
 ---
 
-## Phase 4: Product Listing/Index Page
+## Phase 4: Product Enhancements
 
 **Goal**: Create a page showing all products with filtering and search
 
@@ -667,9 +726,10 @@ class Command(BaseCommand):
 ## Success Criteria by Phase
 
 ### Phase 1 ✓
-- Categories visible in Wagtail snippets admin
-- Sample categories created
-- Management command creates reproducible categories
+- CategoryPage model created and working
+- Category pages browsable in Wagtail page tree
+- Category template displays products and subcategories
+- Sample categories created via management command
 - Tests passing
 
 ### Phase 2 ✓
@@ -715,15 +775,28 @@ class Command(BaseCommand):
 ## Implementation Order Summary
 
 ```
-1. ProductCategory (snippet) ← Foundation
-2. ProductPage (page) ← Core content
-3. CategoryPage (page) ← Browse by category
-4. ProductIndexPage (page) ← Browse all products
-5. ProductVariant, ProductImage (inlines) ← Product enhancements
-6. ProductReview (snippet) ← Social proof
-7. StandardPage, ContactFormPage (pages) ← Supporting content
+1. CategoryPage (page) ← Foundation - categories as pages in tree
+2. ProductPage (page) ← Core content - products as children of categories
+3. ProductIndexPage (page) ← Browse all products with filtering
+4. ProductVariant, ProductImage (inlines) ← Product enhancements
+5. ProductReview (snippet) ← Social proof
+6. StandardPage, ContactFormPage (pages) ← Supporting content
+```
+
+**Page Tree Structure:**
+```
+HomePage
+├── CategoryPage (Electronics)
+│   ├── ProductPage (Wireless Headphones)
+│   ├── ProductPage (Bluetooth Speaker)
+│   └── ...
+├── CategoryPage (Fashion)
+│   ├── ProductPage (Cotton T-Shirt)
+│   └── ...
+├── ProductIndexPage (Shop)
+└── StandardPage (About, Contact, etc.)
 ```
 
 **Later**: Users → Cart → Checkout → Orders
 
-This order ensures each phase builds on the previous, with clear dependencies and testable milestones.
+This order ensures each phase builds on the previous, with clear dependencies and testable milestones. The page-based architecture provides natural URL hierarchy and leverages Wagtail's built-in page management.

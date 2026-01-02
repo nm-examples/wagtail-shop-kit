@@ -19,45 +19,63 @@
 
 ---
 
-## Phase 1: Foundation Setup
+## Phase 1: Category Pages
 
-**Goal**: Category system foundation
+**Goal**: Create category pages as foundation of page tree
+
+**Architecture**: Categories as Wagtail Pages (not snippets) - Products will be children
 
 ### Core Tasks
 - [ ] Create shop app (`python manage.py startapp shop`)
 - [ ] Add shop to INSTALLED_APPS in `app/settings/base.py`
-- [ ] Create ProductCategory snippet model
-  - Fields: name, slug, description, icon, display_order, is_active
-  - Register with `@register_snippet`
+- [ ] Create CategoryPage model (extends wagtail.models.Page)
+  - Fields: description (RichTextField), icon, featured
+  - Parent types: HomePage, self (subcategories)
+  - Subpage types: ProductPage, CategoryPage
+  - Methods: get_products(), get_context()
+- [ ] Create category page template (`app/shop/templates/shop/category_page.html`)
+  - Category header, description, icon
+  - Child categories (if any)
+  - Product grid showing child products
+  - Pagination
 - [ ] Run migrations
 - [ ] Create sample categories command
   - Command: `python manage.py create_sample_categories`
-  - Test with: `--reset`, `--with-icons`
-- [ ] Write tests for categories
-- [ ] Verify in Wagtail admin: Categories appear in Snippets
+  - Creates 6 CategoryPage instances under HomePage
+  - Test with: `--reset`, `--with-icons`, `--parent-slug=home`
+- [ ] Write tests for CategoryPage
+  - Test page tree hierarchy
+  - Test get_products() method
+  - Test template rendering
+- [ ] Verify in Wagtail admin: Category pages in page tree under HomePage
 
 **Completion Criteria**:
 - [ ] All tasks checked above
-- [ ] Categories visible in Wagtail admin
-- [ ] Management command runs successfully
+- [ ] Category pages visible in Wagtail page tree
+- [ ] Categories browsable at /electronics/, /fashion/, etc.
+- [ ] Management command creates all 6 categories
 - [ ] Tests passing (`make test`)
 
 ---
 
 ## Phase 2: Product Detail Pages
 
-**Goal**: Individual product pages with images
+**Goal**: Individual product pages as children of categories
+
+**Architecture**: Products are children of CategoryPages in page tree
 
 ### Core Tasks
 - [ ] Create ProductPage model (extends wagtail.models.Page)
-  - Fields: category, price, sku, description, main_image, in_stock, featured, created_at
-  - Content panels defined
+  - Fields: price, sku, description, main_image, in_stock, featured, created_at
+  - Parent types: CategoryPage ONLY (enforced)
+  - Subpage types: None (leaf node)
   - Search fields configured
+  - Methods: get_category() returns parent
 - [ ] Create ProductImage inline model (gallery)
   - ParentalKey to ProductPage
   - Fields: image, caption, display_order
 - [ ] Create product detail template (`app/shop/templates/shop/product_page.html`)
-  - Product image, title, category breadcrumb
+  - Product image, title, breadcrumb (Home > Category > Product)
   - Price display, description
   - Stock status, "Add to Cart" placeholder
   - Image gallery (thumbnail strip)
@@ -65,13 +83,19 @@
 - [ ] Run migrations
 - [ ] Create sample products command
   - Command: `python manage.py create_sample_products --count=20 --with-images`
-  - Test various options
+  - Creates products as children of existing CategoryPages
+  - Distributes products evenly across categories
+  - Auto-generates SKUs
 - [ ] Write tests for products and images
-- [ ] Verify: Products browsable in Wagtail page tree
+  - Test parent type restriction
+  - Test get_category() method
+  - Test SKU auto-generation
+- [ ] Verify: Products browsable in page tree under categories
 
 **Completion Criteria**:
 - [ ] All tasks checked above
-- [ ] Product pages render correctly
+- [ ] Product pages render correctly at /electronics/wireless-headphones/
+- [ ] Products properly nested under categories in page tree
 - [ ] Images display properly
 - [ ] Management command creates realistic products
 - [ ] Tests passing
