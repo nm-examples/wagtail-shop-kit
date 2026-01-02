@@ -21,6 +21,16 @@ header .welcome-grid {
     color: var(--pico-primary);
 }
 
+.shop-branding h1 a {
+    color: var(--pico-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.shop-branding h1 a:hover {
+    opacity: 0.8;
+}
+
 header nav ul {
     display: flex;
     gap: 1.5rem;
