@@ -8,7 +8,8 @@
                 <h1>Welcome to Wagtail Shop</h1>
                 <p>Discover amazing products for your needs</p>
             </hgroup>
-            <a href="#" role="button" class="hero-cta">Shop Now</a>
+            {% comment %} below can be dynamic later {% endcomment %}
+            <a href="/shop/" role="button" class="hero-cta">Shop Now</a>
         </div>
         <div class="hero-visual">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" aria-hidden="true">
@@ -107,6 +108,9 @@
                 {% endif %}
             </a>
             {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/shop/" role="button" class="secondary">View All Categories</a>
         </div>
         {% else %}
         <p style="text-align: center; color: var(--pico-muted-color);">

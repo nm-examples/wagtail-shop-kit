@@ -23,6 +23,32 @@ from wagtail.models import Page
      """
 
 
+class ShopIndexPage(Page):
+    """
+    Main shop page that displays all categories.
+    Should be created once as a child of HomePage.
+    """
+
+    intro = RichTextField(
+        blank=True, help_text="Optional introduction text for the shop"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+    ]
+
+    parent_page_types = ["home.HomePage"]
+    subpage_types = ["shop.ShopCategoryPage"]
+    max_count = 1  # Only one shop index page allowed
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        # Get all category pages that are children of this shop index
+        categories = ShopCategoryPage.objects.child_of(self).live().order_by("title")
+        context["categories"] = categories
+        return context
+
+
 class ShopCategoryPage(Page):
     description = RichTextField(blank=True)
     icon = models.ForeignKey(
@@ -40,7 +66,7 @@ class ShopCategoryPage(Page):
         FieldPanel("featured"),
     ]
 
-    parent_page_types = ["home.HomePage"]
+    parent_page_types = ["shop.ShopIndexPage"]
     # subpage_types = ["app.shop.ProductPage"] hidden for now
 
     # implement later

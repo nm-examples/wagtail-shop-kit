@@ -38,17 +38,18 @@
   <!-- - Child categories (if any) did not proceed -->
   - Product grid showing child products
   <!-- - Paginationdid not proceed -->
-- [ ] Create a ShopIndexPage (extends wagtail.models.Page)
+- [x] Create a ShopIndexPage (extends wagtail.models.Page)
   - Parent types: HomePage ONLY
   - Subpage types: CategoryPage ONLY
   - Template: `app/shop/templates/shop/shop_index_page.html`
   - Displays all CategoryPages as cards with icon, name, description
-- [ ] Add styling in extra_css block
-- [ ] Run migrations
-- [ ] Create sample categories command
+- [x] Add styling in extra_css block
+- [x] Run migrations
+- [x] Create sample categories command
   - Command: `python manage.py create_sample_categories`
-  - Creates 6 CategoryPage instances under HomePage
-  - Test with: `--reset`, `--with-icons`, `--parent-slug=home`
+  - Creates ShopIndexPage under HomePage (if not exists)
+  - Creates 6 CategoryPage instances under ShopIndexPage
+  - Test with: `--reset`, `--no-icons`, `--shop-slug=shop`, `--shop-title="Shop"`
 - [ ] Write tests for CategoryPage
   - Test page tree hierarchy
   - Test get_products() method

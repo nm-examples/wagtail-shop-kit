@@ -4,11 +4,11 @@ from django.core.management.base import BaseCommand
 from wagtail.images.models import Image
 from wagtail.models import Page
 
-from app.shop.models import ShopCategoryPage
+from app.shop.models import ShopCategoryPage, ShopIndexPage
 
 
 class Command(BaseCommand):
-    help = "Creates sample category pages for the shop"
+    help = "Creates sample category pages for the shop under a ShopIndexPage"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -22,36 +22,74 @@ class Command(BaseCommand):
             help="Skip assigning icons to categories",
         )
         parser.add_argument(
-            "--parent-slug",
+            "--home-slug",
             type=str,
             default="home",
-            help="Slug of the parent page (default: home)",
+            help="Slug of the home page (default: home)",
+        )
+        parser.add_argument(
+            "--shop-title",
+            type=str,
+            default="Shop",
+            help="Title for the shop index page (default: Shop)",
+        )
+        parser.add_argument(
+            "--shop-slug",
+            type=str,
+            default="shop",
+            help="Slug for the shop index page (default: shop)",
         )
 
     def handle(self, *args, **options):
-        # Find parent page
+        # Find home page
         try:
-            parent_page = Page.objects.get(slug=options["parent_slug"])
+            home_page = Page.objects.get(slug=options["home_slug"])
         except Page.DoesNotExist:
             self.stdout.write(
                 self.style.ERROR(
-                    f"Parent page with slug '{options['parent_slug']}' not found"
+                    f"Home page with slug '{options['home_slug']}' not found"
                 )
             )
             return
 
+        # Find or create ShopIndexPage
+        shop_index = ShopIndexPage.objects.filter(slug=options["shop_slug"]).first()
+
+        if shop_index:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Found existing ShopIndexPage: '{shop_index.title}' at {shop_index.get_url()}"
+                )
+            )
+        else:
+            self.stdout.write("Creating ShopIndexPage...")
+            shop_index = ShopIndexPage(
+                title=options["shop_title"],
+                slug=options["shop_slug"],
+                intro="<p>Browse our collection of quality products across various categories.</p>",
+                show_in_menus=True,
+            )
+            home_page.add_child(instance=shop_index)
+            rev = shop_index.save_revision()
+            rev.publish()
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"✓ Created ShopIndexPage: '{shop_index.title}' at {shop_index.get_url()}"
+                )
+            )
+
         # Reset if requested
         if options["reset"]:
             self.stdout.write("Deleting existing category pages...")
-            all_categories = parent_page.get_children().type(ShopCategoryPage)
+            all_categories = shop_index.get_children().type(ShopCategoryPage)
             deleted_count = all_categories.count()
 
             # Delete all at once instead of iterating
             for category in all_categories:
                 category.delete()
 
-            # Refresh parent page from database to update tree structure
-            parent_page.refresh_from_db()
+            # Refresh shop index from database to update tree structure
+            shop_index.refresh_from_db()
 
             self.stdout.write(
                 self.style.SUCCESS(f"Deleted {deleted_count} category pages")
@@ -157,10 +195,13 @@ class Command(BaseCommand):
             random.shuffle(available_images)
 
         for idx, category_data in enumerate(categories):
-            # Check if category already exists
-            existing = ShopCategoryPage.objects.filter(
-                slug=category_data["slug"]
-            ).first()
+            # Check if category already exists under shop index
+            existing = (
+                shop_index.get_children()
+                .type(ShopCategoryPage)
+                .filter(slug=category_data["slug"])
+                .first()
+            )
             if existing:
                 self.stdout.write(
                     self.style.WARNING(
@@ -187,8 +228,8 @@ class Command(BaseCommand):
                     f"  Assigning icon: {category_page.icon.title} (ID: {category_page.icon.id})"
                 )
 
-            # Add as child of parent page
-            parent_page.add_child(instance=category_page)
+            # Add as child of shop index page
+            shop_index.add_child(instance=category_page)
             rev = category_page.save_revision()
             rev.publish()
 
@@ -210,7 +251,7 @@ class Command(BaseCommand):
         if created_count > 0:
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Successfully created {created_count} category pages under '{parent_page.title}'"
+                    f"Successfully created {created_count} category pages under '{shop_index.title}'"
                 )
             )
         else:
@@ -219,7 +260,12 @@ class Command(BaseCommand):
         # Display URLs
         if created_count > 0:
             self.stdout.write("\nCategory URLs:")
-            for category in ShopCategoryPage.objects.all().order_by("title"):
+            for category in (
+                shop_index.get_children()
+                .type(ShopCategoryPage)
+                .live()
+                .order_by("title")
+            ):
                 self.stdout.write(f"  → {category.get_url()} - {category.title}")
 
         self.stdout.write("=" * 60)

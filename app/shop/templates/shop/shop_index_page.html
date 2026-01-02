@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-shopindexpage{% endblock %}
+
+{% block content %}
+<main class="container">
+    <!-- Page Header -->
+    <header class="shop-header">
+        <h1>{{ page.title }}</h1>
+        {% if page.intro %}
+        <div class="shop-intro">
+            {{ page.intro|richtext }}
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Categories Grid -->
+    {% if categories %}
+    <section class="shop-categories">
+        <div class="category-grid">
+            {% for category in categories %}
+            <a href="{% pageurl category %}" class="category-card">
+                {% if category.icon %}
+                    {% image category.icon width-80 as icon_img %}
+                    <div class="category-card-icon">
+                        <img src="{{ icon_img.url }}" alt="{{ category.title }} icon" width="80" height="80">
+                    </div>
+                {% else %}
+                    <div class="category-card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z"/>
+                        </svg>
+                    </div>
+                {% endif %}
+                <div class="category-card-content">
+                    <h3>{{ category.title }}</h3>
+                    {% if category.description %}
+                        <p>{{ category.description|striptags|truncatewords:12 }}</p>
+                    {% endif %}
+                </div>
+                {% if category.featured %}
+                    <span class="category-badge">Featured</span>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <h3>No categories yet</h3>
+        <p>Categories will appear here once they are created.</p>
+        <p style="color: var(--pico-muted-color); font-size: 0.9em;">
+            Run <code>python manage.py create_sample_categories</code> to create sample categories.
+        </p>
+    </div>
+    {% endif %}
+</main>
+{% endblock content %}

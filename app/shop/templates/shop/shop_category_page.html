@@ -6,13 +6,13 @@
 {% block content %}
 <main class="container">
     <!-- Breadcrumb Navigation -->
-    <div class="breadcrumb">
-        <nav aria-label="Breadcrumb">
-            <a href="/">Home</a>
-            <span>/</span>
-            <span aria-current="page">{{ page.title }}</span>
-        </nav>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/shop/">Shop</a></li>
+            <li>{{ page.title }}</li>
+        </ul>
+    </nav>
 
     <!-- Category Header -->
     <header class="category-header">
