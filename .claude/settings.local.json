@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make collectstatic:*)",
+      "Bash(make test:*)"
+    ]
+  }
+}
