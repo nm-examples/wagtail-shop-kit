@@ -12,10 +12,10 @@
 
 ## Setup & Prerequisites
 
-- [ ] Docker environment running (`make up`)
-- [ ] Database selected (SQLite/PostgreSQL/MySQL)
-- [ ] Superuser created (`make superuser`)
-- [ ] Frontend assets compiled (`npm run build`)
+- [x] Docker environment running (`make up`)
+- [x] Database selected (SQLite/PostgreSQL/MySQL)
+- [x] Superuser created (`make superuser`)
+- [x] Frontend assets compiled (`npm run build`)
 
 ---
 
@@ -26,9 +26,9 @@
 **Architecture**: Categories as Wagtail Pages (not snippets) - Products will be children
 
 ### Core Tasks
-- [ ] Create shop app (`python manage.py startapp shop`)
-- [ ] Add shop to INSTALLED_APPS in `app/settings/base.py`
-- [ ] Create CategoryPage model (extends wagtail.models.Page)
+- [x] Create shop app (`python manage.py startapp shop`)
+- [x] Add shop to INSTALLED_APPS in `app/settings/base.py`
+- [x] Create CategoryPage model (extends wagtail.models.Page)
   - Fields: description (RichTextField), icon, featured
   - Parent types: HomePage, self (subcategories)
   - Subpage types: ProductPage, CategoryPage

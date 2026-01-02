@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-shopcategorypage{% endblock %}
+
+{% block content %}
+<main class="container">
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb">
+        <nav aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span>/</span>
+            <span aria-current="page">{{ page.title }}</span>
+        </nav>
+    </div>
+
+    <!-- Category Header -->
+    <header class="category-header">
+        {% if page.icon %}
+        <div class="category-icon">
+            {% image page.icon width-100 as icon_img %}
+            <img src="{{ icon_img.url }}" alt="{{ page.title }} icon">
+        </div>
+        {% endif %}
+
+        <h1>{{ page.title }}</h1>
+
+        {% if page.description %}
+        <div class="category-description">
+            {{ page.description|richtext }}
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Subcategories Section -->
+    {% if subcategories %}
+    <section class="subcategories-section">
+        <h2>Browse Subcategories</h2>
+        <div class="subcategory-grid">
+            {% for subcategory in subcategories %}
+            <a href="{% pageurl subcategory %}" class="subcategory-card">
+                {% if subcategory.icon %}
+                <div class="subcategory-icon">
+                    {% image subcategory.icon width-60 as subcat_icon %}
+                    <img src="{{ subcat_icon.url }}" alt="{{ subcategory.title }} icon">
+                </div>
+                {% endif %}
+                <div class="subcategory-info">
+                    <h3>{{ subcategory.title }}</h3>
+                    {% if subcategory.description %}
+                    <p>{{ subcategory.description|striptags|truncatewords:15 }}</p>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Products Section -->
+    {% if products %}
+    <section class="products-section">
+        <h2>{% if subcategories %}All Products{% else %}Products{% endif %}</h2>
+        <div class="product-grid">
+            {% for product in products %}
+            <a href="{% pageurl product %}" class="product-card">
+                <div class="product-image">
+                    {% if product.main_image %}
+                        {% image product.main_image fill-400x400 as product_img %}
+                        <img src="{{ product_img.url }}" alt="{{ product.title }}">
+                    {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="150" height="150">
+                            <rect fill="var(--pico-muted-color)" opacity="0.1" width="200" height="200"/>
+                            <text x="100" y="100" text-anchor="middle" dy=".3em" fill="var(--pico-muted-color)" font-size="16">No image</text>
+                        </svg>
+                    {% endif %}
+                </div>
+                <div class="product-details">
+                    <h3>{{ product.title }}</h3>
+                    {% if product.description %}
+                    <p class="product-description">{{ product.description|striptags|truncatewords:20 }}</p>
+                    {% endif %}
+                    <p class="product-price">${{ product.price }}</p>
+                    {% if product.in_stock %}
+                    <span class="product-stock-status in-stock">In Stock</span>
+                    {% else %}
+                    <span class="product-stock-status out-of-stock">Out of Stock</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    {% if products.paginator.num_pages > 1 %}
+    <div class="pagination">
+        <nav aria-label="Pagination">
+            {% if products.has_previous %}
+                <a href="?page=1" aria-label="First page">« First</a>
+                <a href="?page={{ products.previous_page_number }}" aria-label="Previous page">‹ Previous</a>
+            {% else %}
+                <span class="disabled">« First</span>
+                <span class="disabled">‹ Previous</span>
+            {% endif %}
+
+            <span class="current">
+                Page {{ products.number }} of {{ products.paginator.num_pages }}
+            </span>
+
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}" aria-label="Next page">Next ›</a>
+                <a href="?page={{ products.paginator.num_pages }}" aria-label="Last page">Last »</a>
+            {% else %}
+                <span class="disabled">Next ›</span>
+                <span class="disabled">Last »</span>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    {% elif not subcategories %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <h3>No products yet</h3>
+        <p>This category doesn't have any products at the moment.</p>
+    </div>
+    {% endif %}
+</main>
+{% endblock content %}
