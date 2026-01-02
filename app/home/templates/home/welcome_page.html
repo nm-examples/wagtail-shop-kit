@@ -1,4 +1,4 @@
-{% load i18n wagtailcore_tags %}
+{% load i18n wagtailcore_tags wagtailimages_tags %}
 
 <main class="container">
     <!-- Hero Banner -->
@@ -89,54 +89,29 @@
     <!-- Product Categories -->
     <section class="product-categories">
         <h2>Shop by Category</h2>
+        {% if featured_categories %}
         <div class="category-grid">
-            <a href="#" class="category-card">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M20,3H4A2,2 0 0,0 2,5V19A2,2 0 0,0 4,21H20A2,2 0 0,0 22,19V5A2,2 0 0,0 20,3M20,19H4V5H20V19M17,11H15V9H13V11H11V13H13V15H15V13H17V11Z"/>
-                </svg>
-                <h3>Electronics</h3>
-                <p>Latest gadgets & tech</p>
+            {% for category in featured_categories %}
+            <a href="{% pageurl category %}" class="category-card">
+                {% if category.icon %}
+                    {% image category.icon width-48 as icon_img %}
+                    <img src="{{ icon_img.url }}" alt="{{ category.title }} icon" width="48" height="48">
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z"/>
+                    </svg>
+                {% endif %}
+                <h3>{{ category.title }}</h3>
+                {% if category.description %}
+                    <p>{{ category.description|striptags|truncatewords:5 }}</p>
+                {% endif %}
             </a>
-
-            <a href="#" class="category-card">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M7,9A2,2 0 0,0 5,11A2,2 0 0,0 7,13A2,2 0 0,0 9,11A2,2 0 0,0 7,9M17,9A2,2 0 0,0 15,11A2,2 0 0,0 17,13A2,2 0 0,0 19,11A2,2 0 0,0 17,9M12,14C10,14 8.2,15.2 7.5,17H16.5C15.8,15.2 14,14 12,14Z"/>
-                </svg>
-                <h3>Fashion</h3>
-                <p>Clothing & accessories</p>
-            </a>
-
-            <a href="#" class="category-card">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M12,3L2,12H5V20H19V12H22L12,3M12,5.7L17,10.7V18H7V10.7L12,5.7M11,10V12H9V14H11V16H13V14H15V12H13V10H11Z"/>
-                </svg>
-                <h3>Home & Living</h3>
-                <p>Furniture & decor</p>
-            </a>
-
-            <a href="#" class="category-card">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H16L11,22.71C10.72,22.89 10.36,23 10,23H9M4,4V16H9V19.08L13.08,16H20V4H4Z"/>
-                </svg>
-                <h3>Beauty</h3>
-                <p>Skincare & cosmetics</p>
-            </a>
-
-            <a href="#" class="category-card">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M6.5,5.5L12,2L17.5,5.5L12,9L6.5,5.5M6,10.53V19L11.5,22V13.03L6,10.53M13,22L18.5,19V10.53L13,13.03V22Z"/>
-                </svg>
-                <h3>Sports</h3>
-                <p>Fitness & outdoors</p>
-            </a>
-
-            <a href="#" class="category-card">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M18,22A2,2 0 0,0 20,20V4C20,2.89 19.1,2 18,2H12V9L9.5,7.5L7,9V2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18Z"/>
-                </svg>
-                <h3>Books</h3>
-                <p>Reading & learning</p>
-            </a>
+            {% endfor %}
         </div>
+        {% else %}
+        <p style="text-align: center; color: var(--pico-muted-color);">
+            No categories available yet. Run <code>python manage.py create_sample_categories</code> to create sample categories.
+        </p>
+        {% endif %}
     </section>
 </main>

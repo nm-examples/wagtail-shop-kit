@@ -175,9 +175,17 @@ header nav a:not([role="button"]):hover {
     color: var(--pico-primary);
 }
 
-.category-card svg {
+.category-card svg,
+.category-card img {
     color: var(--pico-primary);
     margin-bottom: 1rem;
+}
+
+.category-card img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: var(--pico-border-radius);
 }
 
 .category-card h3 {
