@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-productpage{% endblock %}
+
+{% block content %}
+<main class="container">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/shop/">Shop</a></li>
+            {% with category=page.get_category %}
+            <li><a href="{% pageurl category %}">{{ category.title }}</a></li>
+            {% endwith %}
+            <li>{{ page.title }}</li>
+        </ul>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <div class="product-detail">
+        <!-- Product Images -->
+        <div class="product-images">
+            <div class="main-image">
+                {% if page.main_image %}
+                    {% image page.main_image fill-800x800 as main_img %}
+                    <img src="{{ main_img.url }}" alt="{{ page.title }}">
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="auto">
+                        <rect fill="var(--pico-muted-color)" opacity="0.1" width="400" height="400"/>
+                        <text x="200" y="200" text-anchor="middle" dy=".3em" fill="var(--pico-muted-color)" font-size="24">No image</text>
+                    </svg>
+                {% endif %}
+            </div>
+
+            <!-- Image Gallery Thumbnails -->
+            {% if page.gallery_images.all %}
+            <div class="image-gallery">
+                {% for gallery_image in page.gallery_images.all %}
+                <div class="gallery-thumbnail">
+                    {% image gallery_image.image fill-150x150 as thumb_img %}
+                    <img src="{{ thumb_img.url }}" alt="{{ gallery_image.caption|default:page.title }}">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Product Information -->
+        <div class="product-info">
+            <h1>{{ page.title }}</h1>
+
+            <!-- Price and Stock Status -->
+            <div class="product-meta">
+                <p class="product-price">${{ page.price }}</p>
+
+                {% if page.in_stock %}
+                <span class="product-stock-status in-stock">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    In Stock
+                </span>
+                {% else %}
+                <span class="product-stock-status out-of-stock">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Out of Stock
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- SKU -->
+            {% if page.sku %}
+            <p class="product-sku">SKU: <span>{{ page.sku }}</span></p>
+            {% endif %}
+
+            <!-- Description -->
+            <div class="product-description">
+                {{ page.description|richtext }}
+            </div>
+
+            <!-- Add to Cart Section (Placeholder) -->
+            <div class="product-actions">
+                <button type="button" disabled class="add-to-cart-btn" aria-label="Add to cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Add to Cart (Coming Soon)
+                </button>
+                <p class="cart-notice">Shopping cart functionality will be available in a future update.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products Section (Placeholder for Phase 5) -->
+    <!-- Future: Add related products here -->
+</main>
+{% endblock content %}
